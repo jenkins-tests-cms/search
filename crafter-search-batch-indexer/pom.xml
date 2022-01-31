@@ -25,7 +25,7 @@
     <parent>
         <artifactId>crafter-search</artifactId>
         <groupId>org.craftercms</groupId>
-        <version>3.1.18</version><!-- craftercms version flag -->
+        <version>3.1.19</version><!-- craftercms version flag -->
     </parent>
 
     <dependencies>
@@ -59,6 +59,11 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+		<groupId>net.sf.ehcache</groupId>
+		<artifactId>ehcache</artifactId>
+		<version>${ehcache.version}</version>
+	</dependency>
     </dependencies>
 
     <build>

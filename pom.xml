@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-search</artifactId>
-    <version>3.1.18</version><!-- craftercms version flag -->
+    <version>3.1.19</version><!-- craftercms version flag -->
     <packaging>pom</packaging>
     <name>Crafter Search</name>
     <description>Crafter Search Abstraction Layer</description>
@@ -98,6 +98,8 @@
         <jsoup.version>1.14.3</jsoup.version>
         <google.protobuf.version>3.19.3</google.protobuf.version>
         <xerces.version>2.12.1</xerces.version>
+        <ehcache.core.version>2.6.11</ehcache.core.version>
+        <ehcache.version>2.10.9.2</ehcache.version>
     </properties>
 
     <build>
