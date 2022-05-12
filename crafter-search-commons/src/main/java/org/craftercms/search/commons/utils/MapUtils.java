@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -20,26 +20,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.collections4.ListUtils.union;
-import static org.apache.commons.collections4.MapUtils.isEmpty;
 
 /**
  * @author joseross
+ * @since 4.0.0
  */
 public abstract class MapUtils {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Object> mergeMaps(Map<String, Object> a, Map<String, Object> b) {
-        if (isEmpty(a)) {
+        if (org.apache.commons.collections.MapUtils.isEmpty(a)) {
             return b;
         }
 
-        if (isEmpty(b)) {
+        if (org.apache.commons.collections.MapUtils.isEmpty(b)) {
             return a;
         }
 
-        TreeMap<String, Object> map = new TreeMap<>(a);
+        var map = new TreeMap<>(a);
         b.forEach((key, value) -> map.merge(key, value, (oldValue, newValue) -> {
             if (oldValue instanceof Map && newValue instanceof Map) {
                 return mergeMaps((Map<String, Object>) oldValue, (Map<String, Object>) newValue);
@@ -49,11 +48,11 @@ public abstract class MapUtils {
             } else if (oldValue instanceof List && newValue instanceof List) {
                 return union((List<Object>) oldValue, (List<Object>) newValue);
             } else if (oldValue instanceof List) {
-                List<Object> list = new LinkedList<>((List<Object>) oldValue);
+                var list = new LinkedList<>((List<Object>) oldValue);
                 list.add(newValue);
                 return list;
             } else if (newValue instanceof List) {
-                List<Object> list = new LinkedList<>((List<Object>) newValue);
+                var list = new LinkedList<>((List<Object>) newValue);
                 list.add(oldValue);
                 return list;
             } else {

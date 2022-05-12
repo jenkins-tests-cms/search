@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractXmlFileBatchIndexer extends AbstractBatchIndexer {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractXmlFileBatchIndexer.class);
-
     public static final List<String> DEFAULT_INCLUDE_FILENAME_PATTERNS = Collections.singletonList("^.*\\.xml$");
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected ItemProcessor itemProcessor;
 
@@ -68,7 +68,7 @@ public abstract class AbstractXmlFileBatchIndexer extends AbstractBatchIndexer {
     protected void doSingleFileUpdate(String indexId, String siteName, ContentStoreService contentStoreService,
                                       Context context, String path, boolean delete,
                                       UpdateDetail updateDetail, UpdateStatus updateStatus,
-                                      Map<String, String> metadata) {
+                                      Map<String, Object> metadata) {
         if (delete) {
             doDelete(indexId, siteName, path, updateStatus);
         } else {
@@ -82,7 +82,7 @@ public abstract class AbstractXmlFileBatchIndexer extends AbstractBatchIndexer {
 
     protected abstract void doUpdate(String indexId, String siteName, String path, String xml,
                                      UpdateDetail updateDetail, UpdateStatus updateStatus,
-                                     Map<String, String> metadata);
+                                     Map<String, Object> metadata);
 
     protected String processXml(String siteName, ContentStoreService contentStoreService, Context context,
                                 String path) throws CrafterException {

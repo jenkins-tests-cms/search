@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -129,7 +129,7 @@ public abstract class AbstractDocumentBuilder<T> implements DocumentBuilder<T> {
         T doc = createDoc();
         String finalId = site + ":" + id;
 
-        logger.debug("Building Solr doc for {}", finalId);
+        logger.debug("Buildingdoc for {}", finalId);
 
         String now = formatAsIso(Instant.now());
 
@@ -186,7 +186,7 @@ public abstract class AbstractDocumentBuilder<T> implements DocumentBuilder<T> {
         T doc = createDoc();
         String finalId = site + ":" + id;
 
-        logger.debug("Building Solr doc for {}", finalId);
+        logger.debug("Building doc for {}", finalId);
 
         String now = formatAsIso(Instant.now());
 

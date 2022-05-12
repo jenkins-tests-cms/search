@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,7 +24,7 @@ import org.craftercms.search.elasticsearch.exception.ElasticsearchException;
 import org.craftercms.search.batch.UpdateDetail;
 import org.craftercms.search.batch.UpdateStatus;
 import org.craftercms.core.service.Content;
-import org.craftercms.search.exception.SearchException;
+import org.craftercms.search.commons.exception.SearchException;
 import org.springframework.core.io.Resource;
 
 import static org.craftercms.search.commons.utils.MapUtils.mergeMaps;
@@ -60,8 +60,7 @@ public abstract class ElasticsearchIndexingUtils extends IndexingUtils {
                                 final UpdateDetail updateDetail, final UpdateStatus updateStatus,
                                 Map<String, Object> metadata) {
         try {
-            elasticsearch.index(indexName, siteName, path, xml,
-                mergeMaps(metadata, getAdditionalFields(updateDetail)));
+            elasticsearch.index(indexName, siteName, path, xml, mergeMaps(metadata, getAdditionalFields(updateDetail)));
             updateStatus.addSuccessfulUpdate(path);
         } catch (ElasticsearchException e) {
             throw new SearchException(indexName, "Error indexing document " + path, e);
@@ -74,8 +73,8 @@ public abstract class ElasticsearchIndexingUtils extends IndexingUtils {
                                       final Content content, final UpdateDetail updateDetail,
                                       final UpdateStatus updateStatus) {
         try {
-            elasticsearch.indexBinary(indexName, siteName, path,
-                mergeMaps(additionalFields,  getAdditionalFields(updateDetail)), content);
+            elasticsearch.indexBinary(indexName, siteName, path, content,
+                    mergeMaps(additionalFields,  getAdditionalFields(updateDetail)));
             updateStatus.addSuccessfulUpdate(path);
         } catch (ElasticsearchException e) {
             throw new SearchException(indexName, "Error indexing binary document " + path, e);
@@ -89,8 +88,8 @@ public abstract class ElasticsearchIndexingUtils extends IndexingUtils {
                                       final Resource resource, final UpdateDetail updateDetail,
                                       final UpdateStatus updateStatus) {
         try {
-            elasticsearch.indexBinary(indexName, siteName, path,
-                mergeMaps(additionalFields,  getAdditionalFields(updateDetail)), resource);
+            elasticsearch.indexBinary(indexName, siteName, path, resource,
+                    mergeMaps(additionalFields,  getAdditionalFields(updateDetail)));
             updateStatus.addSuccessfulUpdate(path);
         } catch (ElasticsearchException e) {
             throw new SearchException(indexName, "Error indexing binary document " + path, e);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import org.craftercms.search.elasticsearch.exception.ElasticsearchException;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.core.io.Resource;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,19 +38,28 @@ public class MultiElasticsearchAdminServiceImpl extends ElasticsearchAdminServic
     protected RestHighLevelClient[] writeClients;
 
     public MultiElasticsearchAdminServiceImpl(Resource authoringMapping, Resource previewMapping,
+                                              String authoringNamePattern, Map<String, String> localeMapping,
                                               RestHighLevelClient elasticsearchClient,
                                               Map<String, String> indexSettings, RestHighLevelClient[] writeClients) {
-        super(authoringMapping, previewMapping, elasticsearchClient, indexSettings);
+        super(authoringMapping, previewMapping, authoringNamePattern, localeMapping, indexSettings,
+                elasticsearchClient);
         this.writeClients = writeClients;
+    }
+
+    @Override
+    public void createIndex(String aliasName) throws ElasticsearchException {
+        for(RestHighLevelClient client : writeClients) {
+            doCreateIndex(client, aliasName, null);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void createIndex(final String aliasName, final boolean isAuthoring) throws ElasticsearchException {
+    public void createIndex(final String aliasName, Locale locale) throws ElasticsearchException {
         for(RestHighLevelClient client : writeClients) {
-            doCreateIndexAndAlias(client, aliasName, isAuthoring);
+            doCreateIndex(client, aliasName, locale);
         }
     }
 
@@ -64,9 +74,9 @@ public class MultiElasticsearchAdminServiceImpl extends ElasticsearchAdminServic
     }
 
     @Override
-    public void recreateIndex(String aliasName, boolean isAuthoring) throws ElasticsearchException {
+    public void recreateIndex(String aliasName) throws ElasticsearchException {
         for (RestHighLevelClient client : writeClients) {
-            doRecreateIndex(client, aliasName, isAuthoring);
+            doRecreateIndex(client, aliasName);
         }
     }
 

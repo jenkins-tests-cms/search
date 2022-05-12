@@ -1,9 +1,18 @@
+version: "~> 1.0"
+git:
+  depth: 1
+  quiet: true
 language: java
 jdk:
-- openjdk8
+- openjdk11
 branches:
-  except:
-  - travis
+  only:
+  - develop
+  - support/.*
+  - master
+cache:
+  directories:
+  - "$HOME/.m2"
 notifications:
   irc:
     channels:
@@ -11,12 +20,11 @@ notifications:
     use_notice: true
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
-env:
-  global:
-  - secure: COTBijEB+gjVeTC9c+T0jaeKQd4XJZsGCRw1sTLUa1Cmi6C1OMKS3IVtLN9BuEFC5sdLA5O9B8mpYDYXN05JJBkoA2fLdHzQGc2YqzW1rjVRWY8MqMgb1k0uohWZF0mr6l0qbUmgTuWnMWGqsa2IKSdXYXl1SlR2WESmMvC73zE=
-  - secure: 31RiJ+WS2I3Dp7qrAkI9xOvo+uvNA1RcJtuVkwEITAE/Efk4nltc7Q1l6XG2ZqdGfVYJr6rTq3Wiy0YQZ9rGNBmlEhOmuqpFiGauwDNlbeVZf8pwR2AsbFteZTn1Lh057OSMYziAs+2XIQpKHg0LRAF0WbThunVO7q8StgSyJSc=
-before_install: git clone -b travis `git config --get remote.origin.url` target/travis
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash -c  "mvn deploy --settings
-  target/travis/settings.xml";  fi
+  .travis-settings.xml";  fi
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then bash -c "mvn clean install" ;fi
+env:
+  global:
+  - secure: kw7eW7yGrDTpv07TBI/5LmQ0UYCYkMqJddfV3P1xmgQ7heg2v6kTH/tguIVr51Mhv0fg2SGO5DY+850CNgDzBbgvhyqOvWI3q9QOix4K6/usTxb5pw9VpewVKfvt4eypxadL9xLU/TVxG8QNdUydtp3SmPiggupU7nFko2bWqwU=
+  - secure: shG0S/KnkOuJ+8uoS+riItt3iftWz7/D65YrP6Kp9SpZMdm/T6apv/WK2xb/YcyOE4rVNDn2k36L2nEX+VP/urpqqX+EUy4wBC9qwO1+qtnaLeWqf4MQMFAHMpGq2calW0u3YlC2/+ydcDePPcVwVMg0SUgj16UlcwzXpD49odE=

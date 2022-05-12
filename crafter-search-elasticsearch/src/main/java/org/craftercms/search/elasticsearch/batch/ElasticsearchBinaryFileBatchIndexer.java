@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -25,8 +25,6 @@ import org.craftercms.search.batch.impl.AbstractBinaryFileBatchIndexer;
 import org.craftercms.core.service.Content;
 import org.springframework.beans.factory.annotation.Required;
 
-import static java.util.stream.Collectors.toMap;
-
 /**
  * Implementation of {@link AbstractBinaryFileBatchIndexer} for Elasticsearch
  * @author joseross
@@ -51,13 +49,8 @@ public class ElasticsearchBinaryFileBatchIndexer extends AbstractBinaryFileBatch
     @Override
     protected void doUpdateContent(final String indexId, final String siteName, final String path,
                                    final Content binaryContent, final UpdateDetail updateDetail,
-                                   final UpdateStatus updateStatus, Map<String, String> metadata) {
-
-        // This map transformation is required to bridge with the crafter-search API
-        Map<String, Object> map = metadata.entrySet().stream()
-                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        ElasticsearchIndexingUtils.doUpdateBinary(elasticsearchService, indexId, siteName, path, map,
+                                   final UpdateStatus updateStatus, Map<String, Object> metadata) {
+        ElasticsearchIndexingUtils.doUpdateBinary(elasticsearchService, indexId, siteName, path, metadata,
             binaryContent, updateDetail, updateStatus);
     }
 

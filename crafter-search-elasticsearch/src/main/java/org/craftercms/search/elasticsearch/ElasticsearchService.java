@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -19,9 +19,9 @@ package org.craftercms.search.elasticsearch;
 import java.util.List;
 import java.util.Map;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.craftercms.search.elasticsearch.exception.ElasticsearchException;
 import org.craftercms.core.service.Content;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.core.io.Resource;
 
 /**
@@ -34,11 +34,11 @@ public interface ElasticsearchService extends AutoCloseable {
      * Performs a search for a specific field
      * @param indexName the name of the index
      * @param field the name of the field
-     * @param queryBuilder the filters to apply
+     * @param query the filters to apply
      * @return the list of values that match the search
      * @throws ElasticsearchException if there is any error during the operation
      */
-    List<String> searchField(String indexName, String field, QueryBuilder queryBuilder) throws ElasticsearchException;
+    List<String> searchField(String indexName, String field, Query query) throws ElasticsearchException;
 
     Map<String, Object> searchId(String indexName, String docId);
 
@@ -65,8 +65,8 @@ public interface ElasticsearchService extends AutoCloseable {
      * @param additionalFields additional fields to index
      * @throws ElasticsearchException if there is any error during the operation
      */
-    void index(String indexName, String siteId, String docId, String xml,
-               Map<String, Object> additionalFields) throws ElasticsearchException;
+    void index(String indexName, String siteId, String docId, String xml, Map<String, Object> additionalFields)
+            throws ElasticsearchException;
 
     /**
      * Performs an index for the given binary file
@@ -77,11 +77,21 @@ public interface ElasticsearchService extends AutoCloseable {
      * @param content the content of the document
      * @throws ElasticsearchException if there is any error during the operation
      */
-    void indexBinary(String indexName, String siteName, String path, Map<String, Object> additionalFields,
-                     Content content) throws ElasticsearchException;
+    void indexBinary(String indexName, String siteName, String path, Content content,
+                     Map<String, Object> additionalFields) throws ElasticsearchException;
 
-    void indexBinary(String indexName, String siteName, String path, Map<String, Object> additionalFields,
-                     Resource resource) throws ElasticsearchException;
+    default void indexBinary(String indexName, String siteName, String path, Content content)
+            throws ElasticsearchException {
+        indexBinary(indexName, siteName, path, content,null);
+    }
+
+    void indexBinary(String indexName, String siteName, String path, Resource resource,
+                     Map<String, Object> additionalFields) throws ElasticsearchException;
+
+    default void indexBinary(String indexName, String siteName, String path, Resource resource)
+            throws ElasticsearchException {
+        indexBinary(indexName, siteName, path, resource, null);
+    }
 
     /**
      * Performs a delete for the given document

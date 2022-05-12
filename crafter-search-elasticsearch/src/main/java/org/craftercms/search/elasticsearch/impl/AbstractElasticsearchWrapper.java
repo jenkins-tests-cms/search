@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -23,6 +23,7 @@ import org.craftercms.search.elasticsearch.exception.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.IndicesOptions;
+import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
@@ -40,9 +41,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
 import static org.elasticsearch.action.search.SearchRequest.DEFAULT_INDICES_OPTIONS;
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
  * Base implementation of {@link ElasticsearchWrapper}
@@ -50,7 +51,10 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
  */
 public abstract class AbstractElasticsearchWrapper implements ElasticsearchWrapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractElasticsearchWrapper.class);
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public static final String PARAM_NAME_INDEX = "index";
+    public static final String PARAM_NAME_SEARCH_TYPE = "search_type";
 
     public static final String PARAM_NAME_INDEX = "index";
     public static final String PARAM_NAME_SEARCH_TYPE = "search_type";
@@ -110,9 +114,16 @@ public abstract class AbstractElasticsearchWrapper implements ElasticsearchWrapp
      */
     @Override
     public SearchResponse search(final SearchRequest request, final RequestOptions options) {
-        logger.debug("Performing search for request: {}", request);
+        logger.debug("Original search request: {}", request);
         updateIndex(request);
         updateFilters(request);
+        logger.debug("Updated search request: {}", request);
+        if (logger.isDebugEnabled()) {
+            var urls = client.getLowLevelClient().getNodes().stream()
+                                    .map(Node::getHost)
+                                    .collect(toList());
+            logger.debug("Executing search request for urls {}", urls);
+        }
         try {
             return client.search(request, options);
         } catch (Exception e) {

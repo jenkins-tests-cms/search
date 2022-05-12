@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -45,7 +45,7 @@ public interface DocumentBuilder<T> {
      *
      * @param site      the Crafter site name the content belongs to
      * @param id        value for the "localId" field in the document (final doc id is built as site:localId)
-     * @param fields    fields to add to solr document.
+     * @param fields    fields to add to the document.
      *
      * @return the document
      */

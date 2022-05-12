@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -58,7 +58,7 @@ public abstract class AbstractBatchIndexer extends AbstractMetadataCollector imp
         for (String path : updateSet.getUpdatePaths()) {
             if (include(path)) {
                 try {
-                    Map<String, String> metadata = collectMetadata(path, contentStoreService, context);
+                    Map<String, Object> metadata = collectMetadata(path, contentStoreService, context);
                     doSingleFileUpdate(indexId, siteName, contentStoreService, context, path, false,
                         updateSet.getUpdateDetail(path), updateStatus, metadata);
                 } catch (Exception e) {
@@ -91,6 +91,6 @@ public abstract class AbstractBatchIndexer extends AbstractMetadataCollector imp
     protected abstract void doSingleFileUpdate(String indexId, String siteName,
                                                ContentStoreService contentStoreService, Context context,
                                                String path, boolean delete, UpdateDetail updateDetail,
-                                               UpdateStatus updateStatus, Map<String, String> metadata) throws Exception;
+                                               UpdateStatus updateStatus, Map<String, Object> metadata);
 
 }

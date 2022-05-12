@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -25,14 +25,13 @@ import java.util.Map;
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.craftercms.search.elasticsearch.MetadataExtractor;
 import org.craftercms.search.elasticsearch.impl.AbstractDocumentParser;
-import org.craftercms.search.exception.SearchException;
+import org.craftercms.search.commons.exception.SearchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -136,12 +135,10 @@ public class TikaDocumentParser extends AbstractDocumentParser {
         }
         metadataExtractors.forEach(extractor -> extractor.extract(resource, metadata, map));
 
-        Map<String, Object> result = map;
-        if (MapUtils.isNotEmpty(additionalFields)) {
-            result = mergeMaps(map, additionalFields);
-        }
+        Map<String, Object> mergedMap = mergeMaps(map, additionalFields);
+
         try {
-            return objectMapper.writeValueAsString(result);
+            return objectMapper.writeValueAsString(mergedMap);
         } catch (JsonProcessingException e) {
             logger.error("Error writing parsed document as XML");
             throw new SearchException("Error writing parsed document as XML", e);

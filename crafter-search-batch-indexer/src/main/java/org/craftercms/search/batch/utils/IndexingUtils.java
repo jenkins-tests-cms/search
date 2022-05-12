@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,7 +16,6 @@
 
 package org.craftercms.search.batch.utils;
 
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,8 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.search.batch.UpdateDetail;
 import org.springframework.util.MimeType;
+
+import static java.time.ZoneOffset.UTC;
 
 /**
  * @author joseross
@@ -51,7 +52,7 @@ public abstract class IndexingUtils {
             additionalFields = new HashMap<>();
             additionalFields.put(FIELD_NAME_EDITED_BY, updateDetail.getAuthor());
             additionalFields.put(FIELD_NAME_EDITED_ON,
-                    DateTimeFormatter.ISO_INSTANT.format(updateDetail.getDate().atZone(ZoneId.of("UTC"))));
+                    DateTimeFormatter.ISO_INSTANT.format(updateDetail.getDate().atZone(UTC)));
         }
         return additionalFields;
     }
