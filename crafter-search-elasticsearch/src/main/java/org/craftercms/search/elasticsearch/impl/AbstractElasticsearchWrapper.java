@@ -32,6 +32,7 @@ import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchModule;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
@@ -52,9 +53,6 @@ import static org.elasticsearch.action.search.SearchRequest.DEFAULT_INDICES_OPTI
 public abstract class AbstractElasticsearchWrapper implements ElasticsearchWrapper {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public static final String PARAM_NAME_INDEX = "index";
-    public static final String PARAM_NAME_SEARCH_TYPE = "search_type";
 
     public static final String PARAM_NAME_INDEX = "index";
     public static final String PARAM_NAME_SEARCH_TYPE = "search_type";
@@ -102,8 +100,7 @@ public abstract class AbstractElasticsearchWrapper implements ElasticsearchWrapp
 
         for(String filterQuery : filterQueries) {
             logger.debug("Adding filter query: {}", filterQuery);
-            // Override the default field to prevent an unnecessary wildcard expansion
-            boolQueryBuilder.filter(queryStringQuery(filterQuery).defaultField("some_field"));
+            boolQueryBuilder.filter(new QueryStringQueryBuilder(filterQuery));
         }
 
         request.source().query(boolQueryBuilder);

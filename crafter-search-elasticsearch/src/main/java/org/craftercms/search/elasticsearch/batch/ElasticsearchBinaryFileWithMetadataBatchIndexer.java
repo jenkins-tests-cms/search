@@ -16,15 +16,11 @@
 
 package org.craftercms.search.elasticsearch.batch;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.craftercms.search.elasticsearch.ElasticsearchService;
 import org.craftercms.search.elasticsearch.exception.ElasticsearchException;
 import org.craftercms.search.batch.UpdateDetail;
@@ -39,8 +35,7 @@ import org.springframework.core.io.Resource;
  * Implementation of {@link AbstractBinaryFileWithMetadataBatchIndexer} for Elasticsearch
  * @author joseross
  */
-public class ElasticsearchBinaryFileWithMetadataBatchIndexer extends
-        AbstractBinaryFileWithMetadataBatchIndexer<Map<String, Object>> {
+public class ElasticsearchBinaryFileWithMetadataBatchIndexer extends AbstractBinaryFileWithMetadataBatchIndexer {
 
     /**
      * Elasticsearch service

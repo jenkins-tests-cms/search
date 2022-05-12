@@ -116,7 +116,6 @@ public class ElasticsearchAdminServiceImpl implements ElasticsearchAdminService 
         this.localeMapping = localeMapping;
         this.defaultSettings = defaultSettings;
         this.elasticsearchClient = elasticsearchClient;
-        this.defaultSettings = defaultSettings;
     }
 
     public void setIndexNameSuffix(final String indexNameSuffix) {
@@ -280,75 +279,6 @@ public class ElasticsearchAdminServiceImpl implements ElasticsearchAdminService 
         } catch (Exception e) {
             throw new ElasticsearchException(aliasName, "Error upgrading index " + aliasName, e);
         }
-        return indices.getAliases().keySet().stream().findFirst();
-    }
-
-    protected Map<String, String> doGetIndexSettings(RestHighLevelClient client, String indexName) throws IOException {
-        GetSettingsResponse response =
-                client.indices().getSettings(new GetSettingsRequest().indices(indexName), RequestOptions.DEFAULT);
-        Map<String, String> settings = new HashMap<>(defaultSettings);
-        defaultSettings.keySet().forEach(key -> {
-            String value = response.getSetting(indexName, key);
-            if (isNotEmpty(value)) {
-                logger.debug("Using existing setting {}={} from index {}", key, value, indexName);
-                settings.put(key, value);
-            }
-        });
-        return settings;
-    }
-
-    protected void doReindex(RestHighLevelClient client, String sourceIndex, String destinationIndex)
-            throws IOException {
-        logger.info("Reindexing all existing content from {} to {}", sourceIndex, destinationIndex);
-        BulkByScrollResponse response = client.reindex(
-                new ReindexRequest().setSourceIndices(sourceIndex).setDestIndex(destinationIndex).setRefresh(true),
-                RequestOptions.DEFAULT);
-        logger.info("Successfully indexed {} docs into {}", response.getTotal(), destinationIndex);
-    }
-
-    protected void doSwap(RestHighLevelClient client, String aliasName, String existingIndexName, String newIndexName)
-            throws IOException {
-        logger.info("Swapping index {} with {}", existingIndexName, newIndexName);
-        client.indices().updateAliases(new IndicesAliasesRequest()
-                .addAliasAction(
-                        new IndicesAliasesRequest.AliasActions(IndicesAliasesRequest.AliasActions.Type.ADD)
-                                .index(newIndexName)
-                                .alias(aliasName))
-                .addAliasAction(
-                        new IndicesAliasesRequest.AliasActions(IndicesAliasesRequest.AliasActions.Type.REMOVE)
-                                .index(existingIndexName)
-                                .alias(aliasName)
-                ), RequestOptions.DEFAULT);
-    }
-
-    protected void doDeleteIndex(RestHighLevelClient client, String indexName) throws IOException {
-        logger.info("Deleting index {}", indexName);
-        client.indices().delete(new DeleteIndexRequest(indexName), RequestOptions.DEFAULT);
-    }
-
-    @Override
-    public void waitUntilReady() {
-        doWaitUntilReady(elasticsearchClient);
-    }
-
-    protected void doWaitUntilReady(RestHighLevelClient client) {
-        logger.info("Waiting for Elasticsearch cluster to be ready");
-        boolean ready = false;
-        do {
-            try {
-                ready = client.ping(RequestOptions.DEFAULT);
-            } catch (IOException e) {
-                logger.debug("Error pinging Elasticsearch cluster", e);
-            }
-            if (!ready) {
-                logger.info("Elasticsearch cluster not ready, will try again in 5 seconds");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    logger.error("Error waiting for Elasticsearch cluster to be ready", e);
-                }
-            }
-        } while(!ready);
     }
 
     protected List<String> doGetIndexes(RestHighLevelClient client, String aliasName) throws IOException {

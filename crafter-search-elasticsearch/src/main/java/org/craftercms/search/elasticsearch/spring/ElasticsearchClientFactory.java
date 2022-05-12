@@ -61,8 +61,6 @@ public class ElasticsearchClientFactory extends AbstractFactoryBean<Elasticsearc
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientFactory.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientFactory.class);
-
     /**
      * List of Elasticsearch urls
      */

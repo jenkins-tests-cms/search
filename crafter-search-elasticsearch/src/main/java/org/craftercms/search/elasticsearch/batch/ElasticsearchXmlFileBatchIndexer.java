@@ -30,8 +30,6 @@ import org.craftercms.search.batch.UpdateStatus;
 import org.craftercms.search.batch.impl.AbstractXmlFileBatchIndexer;
 import org.craftercms.search.locale.LocaleExtractor;
 
-import static java.util.stream.Collectors.toMap;
-
 /**
  * Implementation of {@link AbstractXmlFileBatchIndexer} for Elasticsearch
  * @author joseross
@@ -94,7 +92,7 @@ public class ElasticsearchXmlFileBatchIndexer extends AbstractXmlFileBatchIndexe
                             final UpdateDetail updateDetail, final UpdateStatus updateStatus,
                             Map<String, Object> metadata) {
         ElasticsearchIndexingUtils.doUpdate(elasticsearchService, indexId, siteName, path, xml, updateDetail,
-            updateStatus, map);
+            updateStatus, metadata);
     }
 
 }

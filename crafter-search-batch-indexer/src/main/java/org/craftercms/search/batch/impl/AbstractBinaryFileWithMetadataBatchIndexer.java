@@ -61,14 +61,12 @@ import static org.craftercms.search.commons.utils.MapUtils.mergeMaps;
  * indexer supports the concept of "child" binaries, where the parent is the metadata file and the binary file only
  * exists in the index as long as the metadata file exists and it references the binary.
  *
- * @param <T> The type for the additional fields to be included
- *
  * @author avasquez
  */
-public abstract class AbstractBinaryFileWithMetadataBatchIndexer<T>
+public abstract class AbstractBinaryFileWithMetadataBatchIndexer
     extends AbstractMetadataCollector implements BatchIndexer {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(AbstractBinaryFileWithMetadataBatchIndexer.class);
 
     public static final String DEFAULT_METADATA_PATH_FIELD_NAME = "metadataPath";
     public static final String DEFAULT_LOCAL_ID_FIELD_NAME = "localId";
