@@ -17,6 +17,7 @@
 package org.craftercms.search.batch.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.file.stores.RemoteFile;
 import org.craftercms.commons.file.stores.RemoteFileResolver;
@@ -70,6 +71,7 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
 
     public static final String DEFAULT_METADATA_PATH_FIELD_NAME = "metadataPath";
     public static final String DEFAULT_LOCAL_ID_FIELD_NAME = "localId";
+    public static final String DEFAULT_INTERNAL_NAME_FIELD_NAME = "internalName";
 
     protected List<String> supportedMimeTypes;
     protected FileTypeMap mimeTypesMap;
@@ -77,6 +79,7 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
     protected ItemProcessor itemProcessor;
     protected List<String> metadataPathPatterns;
     protected List<String> binaryPathPatterns;
+    protected List<String> binarySearchablePathPatterns;
     protected List<String> remoteBinaryPathPatterns;
     protected List<String> childBinaryPathPatterns;
     protected List<String> referenceXPaths;
@@ -87,11 +90,13 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
     protected String metadataPathFieldName;
     protected String localIdFieldName;
     protected long maxFileSize;
+    protected String internalNameFieldName;
 
     public AbstractBinaryFileWithMetadataBatchIndexer() {
         mimeTypesMap = new ConfigurableMimeFileTypeMap();
         metadataPathFieldName = DEFAULT_METADATA_PATH_FIELD_NAME;
         localIdFieldName = DEFAULT_LOCAL_ID_FIELD_NAME;
+        internalNameFieldName = DEFAULT_INTERNAL_NAME_FIELD_NAME;
     }
 
     public void setSupportedMimeTypes(List<String> supportedMimeTypes) {
@@ -116,6 +121,10 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
 
     public void setBinaryPathPatterns(List<String> binaryPathPatterns) {
         this.binaryPathPatterns = binaryPathPatterns;
+    }
+
+    public void setBinarySearchablePathPatterns(List<String> binarySearchablePathPatterns) {
+        this.binarySearchablePathPatterns = binarySearchablePathPatterns;
     }
 
     public void setRemoteBinaryPathPatterns(List<String> remoteBinaryPathPatterns) {
@@ -151,6 +160,10 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
         this.localIdFieldName = localIdFieldName;
     }
 
+    public void setInternalNameFieldName(String internalNameFieldName) {
+        this.internalNameFieldName = internalNameFieldName;
+    }
+
     @Required
     public void setMaxFileSize(final long maxFileSize) {
         this.maxFileSize = maxFileSize;
@@ -169,12 +182,15 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
         List<String> updatePaths = updateSet.getUpdatePaths();
         Set<String> metadataUpdatePaths = new LinkedHashSet<>();
         Set<String> binaryUpdatePaths = new LinkedHashSet<>();
+        Set<String> binarySearchablePaths = new LinkedHashSet<>();
 
         for (String path : updatePaths) {
             if (isMetadata(path)) {
                 metadataUpdatePaths.add(path);
             } else if (isBinary(path)) {
                 binaryUpdatePaths.add(path);
+            } else if (isBinarySearchable(path)) {
+                binarySearchablePaths.add(path);
             }
         }
 
@@ -205,6 +221,20 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
                     updateBinaryWithMetadata(indexId, siteName, contentStoreService, context, newBinaryPath,
                             mergedMetadata, updateSet.getUpdateDetail(metadataPath), updateStatus);
                 }
+            }
+        }
+
+        // add binary path from xml document which contains binaries references
+        for (String binarySearchPath : binarySearchablePaths) {
+            Collection<String> newBinaryPaths = Collections.emptyList();
+            Document metadataDoc = loadMetadata(contentStoreService, context, siteName, binarySearchPath);
+
+            if (metadataDoc != null) {
+                newBinaryPaths = getBinaryFilePaths(metadataDoc);
+            }
+
+            if (isNotEmpty(newBinaryPaths)) {
+                binaryUpdatePaths.addAll(newBinaryPaths);
             }
         }
 
@@ -293,6 +323,10 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
     protected boolean isBinary(String path) {
         return RegexUtils.matchesAny(path, binaryPathPatterns) &&
                isMimeTypeSupported(mimeTypesMap, supportedMimeTypes, path);
+    }
+
+    protected boolean isBinarySearchable(String path) {
+        return RegexUtils.matchesAny(path, binarySearchablePathPatterns);
     }
 
     protected boolean isRemoteBinary(String path) {
@@ -406,7 +440,8 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
                 if(remoteFile.getContentLength() > maxFileSize) {
                     logger.warn("Skipping large binary file @ {}", binaryPath);
                 } else {
-                    doUpdateContent(indexId, siteName, binaryPath, remoteFile.toResource(), updateDetail, updateStatus);
+                    Map<String, Object> metadata = collectRemoteAssetMetadata(binaryPath);
+                    doUpdateContent(indexId, siteName, binaryPath, remoteFile.toResource(), metadata, updateDetail, updateStatus);
                 }
             } else {
                 Content binaryContent = contentStoreService.findContent(context, binaryPath);
@@ -430,6 +465,13 @@ public abstract class AbstractBinaryFileWithMetadataBatchIndexer
     protected abstract void doUpdateContent(final String indexId, final String siteName, final String binaryPath,
                                             final Resource toResource, final UpdateDetail updateDetail,
                                             final UpdateStatus updateStatus);
+
+    protected Map<String, Object> collectRemoteAssetMetadata(String binaryPath) {
+        Map<String, Object> metadata = new HashMap<>();
+        String internalName = FilenameUtils.getName(binaryPath);
+        metadata.put(internalNameFieldName, internalName);
+        return metadata;
+    }
 
     protected Map<String, Object> extractMetadata(String path, Document document) {
         Map<String, Object> metadata = new TreeMap<>();
