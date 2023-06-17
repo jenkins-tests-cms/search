@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,22 +13,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.search.commons.service.impl;
 
-import org.craftercms.search.commons.service.FieldValueConverter;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
+package org.craftercms.search.opensearch.exception;
+
+import org.craftercms.search.commons.exception.SearchException;
 
 /**
- * {@link FieldValueConverter} that strips all HTML tags from a field.
- *
- * @author avasquez
+ * Base exception for all OpenSearch errors
+ * @author joseross
  */
-public class HtmlStrippingConverter implements FieldValueConverter {
+public class OpenSearchException extends SearchException {
 
-    @Override
-    public Object convert(String name, String value) {
-        return Jsoup.clean(value, Safelist.none());
+    public OpenSearchException(final String indexId, final String msg) {
+        super(indexId, msg);
+    }
+
+    public OpenSearchException(final String indexId, final String msg, final Throwable throwable) {
+        super(indexId, msg, throwable);
     }
 
 }
