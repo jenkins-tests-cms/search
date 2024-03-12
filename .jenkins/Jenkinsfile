@@ -6,6 +6,7 @@ pipeline {
     }
   }
 
+
   stages {
     
     stage('maven') {
@@ -22,12 +23,12 @@ pipeline {
         sh "mvn clean install"
       }
     }
+
+    stage("capture") {
+      steps {
+        junit skipMarkingBuildUnstable: true, '**/**/target/surefire-reports/TEST*.xml'    
+      }  
   
   }
 
-  post {
-    always {
-      junit skipMarkingBuildUnstable: true, stdioRetention: '', testResults: '**/target/surefire-reports/TEST*.xml'
-    }
-  }
 }
