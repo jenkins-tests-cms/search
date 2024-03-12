@@ -28,7 +28,9 @@ pipeline {
   post {
     always {
       junit skipMarkingBuildUnstable: true, stdioRetention: '', testResults: '**/**/target/surefire-reports/TEST*.xml'
+      sh "test ${currentBuild.currentResult} != UNSTABLE"
       emailext body: '''Result: ${currentBuild.currentResult} Build # ${BUILD_NUMBER}''', recipientProviders: [buildUser()], subject: '''Build # ${BUILD_NUMBER} status Your build ${currentBuild.displayName} failed.'''
+      
     }
   }
 
