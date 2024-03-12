@@ -22,11 +22,12 @@ pipeline {
         sh "mvn clean install"
       }
     }
-    
-    stage("capture") {
-      steps {
-        junit '**/target/surefire-reports/TEST*.xml'    
-      }  
+  
+  }
+
+  post {
+    always {
+      junit '**/target/surefire-reports/TEST*.xml' 
     }
   }
 }
